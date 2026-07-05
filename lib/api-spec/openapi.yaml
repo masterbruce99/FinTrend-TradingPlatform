@@ -1,0 +1,557 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Trading Dashboard API - real-time market data, crypto, macro indicators, and news
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: quotes
+    description: Live stock quotes
+  - name: crypto
+    description: Cryptocurrency market data
+  - name: macro
+    description: Macroeconomic indicators
+  - name: news
+    description: Market news feeds
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /quotes:
+    get:
+      operationId: getQuotes
+      tags: [quotes]
+      summary: Get stock quotes
+      description: Fetches real-time stock quotes from Yahoo Finance
+      parameters:
+        - name: symbols
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Comma-separated list of stock symbols (e.g., AAPL,NVDA,MSFT)
+      responses:
+        "200":
+          description: List of stock quotes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuotesResponse"
+
+  /quotes/chart/{symbol}:
+    get:
+      operationId: getChart
+      tags: [quotes]
+      summary: Get chart data
+      description: Fetches intraday chart data for a stock
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: interval
+          in: query
+          schema:
+            type: string
+            default: 5m
+        - name: range
+          in: query
+          schema:
+            type: string
+            default: 1d
+      responses:
+        "200":
+          description: Chart data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChartResponse"
+
+  /finance/summary/{symbol}:
+    get:
+      operationId: getFinancialSummary
+      tags: [quotes]
+      summary: Get financial statements
+      description: Fetches financial data, key stats, income stmt, balance sheet, cashflow
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Financial summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinancialSummary"
+
+  /finance/options/{symbol}:
+    get:
+      operationId: getOptionsChain
+      tags: [quotes]
+      summary: Get options chain
+      description: Fetches options chain data for a stock
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Options chain data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptionsChain"
+
+  /finance/news:
+    get:
+      operationId: getNews
+      tags: [news]
+      summary: Get market news
+      description: Fetches latest market news from Yahoo Finance
+      parameters:
+        - name: symbols
+          in: query
+          schema:
+            type: string
+        - name: count
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: News articles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsResponse"
+
+  /macro/faang-news:
+    get:
+      operationId: getFaangNews
+      tags: [news]
+      summary: Get FAANG news
+      description: Fetches news for FAANG stocks from Seeking Alpha or Yahoo Finance
+      responses:
+        "200":
+          description: FAANG news articles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsResponse"
+
+  /crypto/tickers:
+    get:
+      operationId: getCryptoTickers
+      tags: [crypto]
+      summary: Get crypto tickers
+      description: Fetches real-time cryptocurrency prices from Binance
+      parameters:
+        - name: symbols
+          in: query
+          schema:
+            type: string
+            default: BTCUSDT,ETHUSDT,SOLUSDT,BNBUSDT
+      responses:
+        "200":
+          description: List of crypto tickers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CryptoTickersResponse"
+
+  /crypto/klines/{symbol}:
+    get:
+      operationId: getCryptoKlines
+      tags: [crypto]
+      summary: Get crypto OHLCV data
+      description: Fetches candlestick data for a cryptocurrency
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: interval
+          in: query
+          schema:
+            type: string
+            default: 1h
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        "200":
+          description: Candlestick data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlinesResponse"
+
+  /crypto/funding/{symbol}:
+    get:
+      operationId: getFundingRate
+      tags: [crypto]
+      summary: Get funding rate
+      description: Fetches current funding rate and premium index
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Funding rate data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FundingRate"
+
+  /macro/yieldcurve:
+    get:
+      operationId: getYieldCurve
+      tags: [macro]
+      summary: Get yield curve
+      description: Fetches US Treasury yield curve data from FRED
+      responses:
+        "200":
+          description: Yield curve data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/YieldCurve"
+
+  /macro/dashboard:
+    get:
+      operationId: getMacroDashboard
+      tags: [macro]
+      summary: Get macro indicators
+      description: Fetches key macroeconomic indicators from FRED
+      responses:
+        "200":
+          description: Macro dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MacroDashboard"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    Quote:
+      type: object
+      properties:
+        symbol: { type: string }
+        name: { type: string }
+        price: { type: number }
+        change: { type: number }
+        changePct: { type: number }
+        volume: { type: number }
+        open: { type: number }
+        high: { type: number }
+        low: { type: number }
+        prevClose: { type: number }
+        week52High: { type: number }
+        week52Low: { type: number }
+        marketCap: { type: number }
+        pe: { type: number }
+        avgVolume: { type: number }
+        bid: { type: number }
+        ask: { type: number }
+
+    QuotesResponse:
+      type: object
+      properties:
+        quotes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Quote"
+        source: { type: string }
+        asOf: { type: string }
+
+    ChartBar:
+      type: object
+      properties:
+        time: { type: string }
+        open: { type: number }
+        high: { type: number }
+        low: { type: number }
+        close: { type: number }
+        volume: { type: number }
+
+    ChartResponse:
+      type: object
+      properties:
+        bars:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChartBar"
+        symbol: { type: string }
+        source: { type: string }
+        asOf: { type: string }
+
+    FinancialData:
+      type: object
+      additionalProperties: true
+
+    KeyStatistics:
+      type: object
+      additionalProperties: true
+
+    FinancialSummary:
+      type: object
+      properties:
+        symbol: { type: string }
+        financialData:
+          $ref: "#/components/schemas/FinancialData"
+        keyStatistics:
+          $ref: "#/components/schemas/KeyStatistics"
+        income:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        balance:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        cashflow:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        source: { type: string }
+        asOf: { type: string }
+
+    Option:
+      type: object
+      properties:
+        strike: { type: number }
+        expiration: { type: ["string", "null"] }
+        lastPrice: { type: number }
+        bid: { type: number }
+        ask: { type: number }
+        change: { type: number }
+        changePct: { type: number }
+        volume: { type: number }
+        openInterest: { type: number }
+        impliedVol: { type: number }
+        inTheMoney: { type: boolean }
+
+    OptionsChain:
+      type: object
+      properties:
+        symbol: { type: string }
+        underlyingPrice: { type: number }
+        expirationDates:
+          type: array
+          items: { type: string }
+        calls:
+          type: array
+          items:
+            $ref: "#/components/schemas/Option"
+        puts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Option"
+        source: { type: string }
+        asOf: { type: string }
+
+    NewsItem:
+      type: object
+      properties:
+        id: { type: string }
+        headline: { type: string }
+        summary: { type: ["string", "null"] }
+        publisher: { type: string }
+        url: { type: ["string", "null"] }
+        publishedAt: { type: ["string", "null"] }
+        symbols:
+          type: array
+          items: { type: string }
+        thumbnail: { type: ["string", "null"] }
+        source: { type: string }
+
+    NewsResponse:
+      type: object
+      properties:
+        news:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewsItem"
+        count: { type: integer }
+        dataSource: { type: string }
+        asOf: { type: string }
+
+    CryptoTicker:
+      type: object
+      properties:
+        symbol: { type: string }
+        price: { type: number }
+        change: { type: number }
+        changePct: { type: number }
+        volume: { type: number }
+        quoteVolume: { type: number }
+        high: { type: number }
+        low: { type: number }
+
+    CryptoTickersResponse:
+      type: object
+      properties:
+        tickers:
+          type: array
+          items:
+            $ref: "#/components/schemas/CryptoTicker"
+        source: { type: string }
+        asOf: { type: string }
+
+    KlineBar:
+      type: object
+      properties:
+        time: { type: string }
+        open: { type: number }
+        high: { type: number }
+        low: { type: number }
+        close: { type: number }
+        volume: { type: number }
+
+    KlinesResponse:
+      type: object
+      properties:
+        symbol: { type: string }
+        interval: { type: string }
+        bars:
+          type: array
+          items:
+            $ref: "#/components/schemas/KlineBar"
+        count: { type: integer }
+        source: { type: string }
+        asOf: { type: string }
+
+    FundingRate:
+      type: object
+      properties:
+        symbol: { type: string }
+        markPrice: { type: number }
+        indexPrice: { type: number }
+        fundingRate: { type: number }
+        nextFundingTime: { type: ["string", "null"] }
+        openInterest: { type: number }
+        rateHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              time: { type: string }
+              fundingRate: { type: number }
+        source: { type: string }
+        asOf: { type: string }
+
+    YieldCurveMaturity:
+      type: object
+      properties:
+        maturity: { type: string }
+        current: { type: ["number", "null"] }
+        monthAgo: { type: ["number", "null"] }
+        yearAgo: { type: ["number", "null"] }
+
+    YieldCurveSpread:
+      type: object
+      properties:
+        label: { type: string }
+        current:
+          type: object
+          properties:
+            date: { type: string }
+            value: { type: number }
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              date: { type: string }
+              value: { type: number }
+
+    YieldCurve:
+      type: object
+      properties:
+        snapshot:
+          type: array
+          items:
+            $ref: "#/components/schemas/YieldCurveMaturity"
+        maturities:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        spreads:
+          type: array
+          items:
+            $ref: "#/components/schemas/YieldCurveSpread"
+        source: { type: string }
+        asOf: { type: string }
+
+    MacroIndicator:
+      type: object
+      properties:
+        id: { type: string }
+        label: { type: string }
+        unit: { type: string }
+        value: { type: ["number", "null"] }
+        date: { type: ["string", "null"] }
+        prevValue: { type: ["number", "null"] }
+        change: { type: ["number", "null"] }
+        yoyChange: { type: ["number", "null"] }
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              date: { type: string }
+              value: { type: number }
+
+    MacroDashboard:
+      type: object
+      properties:
+        indicators:
+          type: array
+          items:
+            $ref: "#/components/schemas/MacroIndicator"
+        source: { type: string }
+        asOf: { type: string }

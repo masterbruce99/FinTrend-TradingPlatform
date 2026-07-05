@@ -1,0 +1,38 @@
+You are an expert full-stack engineer and quantitative finance developer working inside a Replit workspace. Your task is to implement the "Sidekick Agent"—an AI-powered trading assistant—into the existing "FinTrend+" architecture. 
+
+CRITICAL APPLICATION RULES:
+1. Zero Mock Data: Every single data layer must be fully functional. No hardcoded state, no simulated numbers, and no setTimeout fallbacks representing fake tasks.
+2. Direct API Integration: Use the real, existing backend routes where available (like our Yahoo Finance, FRED, and Binance API endpoints) and wire up the DeepSeek API for the agentic intelligence layer.
+
+Implement the Sidekick Agent using DeepSeek-V3/DeepSeek-R1 via official API tool-calling (function calling) across these five core pillars:
+
+### 1. Agentic Indicator Coding
+- Create a secure Node.js execution sandbox or dynamic script evaluator on the backend.
+- Allow the agent to write technical indicators from scratch using JavaScript/TypeScript.
+- Implement a "Self-Correction Loop": The agent compiles the script, attempts to inject it into our Lightweight-charts v5 implementation, catches any execution or syntax errors via try/catch listeners, and autonomously refactors its own code until it successfully renders on the UI.
+
+### 2. Automated Alert Setting
+- Expand our database schema to support real-time conditional tracking: Ticker, Indicator/Metric, Operator (>, <, ==), Target Value, and Status (Active/Triggered).
+- The agent must parse natural language (e.g., "Alert me if Apple cross above its 50 MA") into structured database rows.
+- Provide the agent with a batch-processing function so it can instantly apply an alert schema across a user's entire watchlist array in a single operation.
+
+### 3. Natural Language Market Scanning
+- Build a parsing engine where the agent translates conversational criteria ("Find tech stocks with RSI under 30 and price above 200 EMA") into structured array filters.
+- Run these filters dynamically against the active /api/quotes or /api/crypto/tickers data feeds.
+- The agent must output a clean, real-time filtered table of matching tickers directly in the chat interface.
+
+### 4. Live Portfolio Analysis
+- Connect the agent directly to the active portfolio state (simulated live broker balance sheet or real user ledger). 
+- Provide tools enabling the agent to calculate live portfolio risk, rank active positions by technical strength, measure distance to key support levels, and output a structured optimization report.
+
+### 5. Deep Fundamental Research
+- Equip the agent with functional tool calling to pull live data payloads from our active infrastructure:
+  - Financial statements, margins, and earnings dates via /api/finance/summary/:symbol.
+  - Options chains (Strikes, IV, Vol, OI) via /api/options/:symbol.
+  - Macroeconomic datasets (CPI, Yield Curve) via /api/macro/dashboard.
+- The agent must autonomously call these tools based on conversation context and synthesize the raw JSON data into concise markdown breakdowns.
+
+### UI & Workspace Layout
+- Add a collapsible "Sidekick AI Assistant" chat panel to the right side of the main trading dashboard layout.
+- The interface must be heavily scannable: use bold text for crucial metrics, structured Markdown tables for stock/crypto data, and clean code blocks with syntax highlighting for generated indicators.
+- Use DeepSeek's structured tool definitions (`tools` parameters in chat completions) so the agent determines exactly when to pull portfolio stats, adjust alert rows, or call financial APIs based on user prompts.
