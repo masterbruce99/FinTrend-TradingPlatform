@@ -1,5 +1,5 @@
 kind = "web"
-previewPath = "/trading-dashboard/"
+previewPath = "/fintrend/"
 title = "FinTrend"
 version = "1.0.0"
 id = "artifacts/trading-dashboard"
@@ -11,7 +11,7 @@ version = "1.0.0"
 
 [[services]]
 name = "web"
-paths = [ "/trading-dashboard/" ]
+paths = [ "/fintrend/" ]
 localPort = 24210
 
 [services.development]
@@ -28,4 +28,4 @@ to = "/index.html"
 
 [services.env]
 PORT = "24210"
-BASE_PATH = "/trading-dashboard/"
+BASE_PATH = "/fintrend/"
